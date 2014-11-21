@@ -23,8 +23,8 @@ class Default(DefaultDataSpecsMixin, Cost):
     supervised = True
 
     def expr(self, model, data, **kwargs):
-        """Returns a theano expression for the cost function.
-
+        """
+        Returns a theano expression for the cost function.
         Parameters
         ----------
         model : MLP
@@ -44,7 +44,8 @@ class Default(DefaultDataSpecsMixin, Cost):
 
 
 class WeightDecay(NullDataSpecsMixin, Cost):
-    """L2 regularization cost for MLP.
+    """
+    L2 regularization cost for MLP.
 
     coeff * sum(sqr(weights)) for each set of weights.
 
@@ -62,8 +63,8 @@ class WeightDecay(NullDataSpecsMixin, Cost):
         self.__dict__.update(locals())
         del self.self
 
-    def expr(self, model, data, ** kwargs):
-        """Returns a theano expression for the cost function.
+    def expr(self, model, data, **kwargs):
+        """
 
         Parameters
         ----------
@@ -95,6 +96,7 @@ class WeightDecay(NullDataSpecsMixin, Cost):
                        for layer, coeff
                        in safe_izip(model.layers, self.coeffs)]
 
+
         assert T.scalar() != 0.  # make sure theano semantics do what I want
         layer_costs = [cost for cost in layer_costs if cost != 0.]
 
@@ -103,7 +105,7 @@ class WeightDecay(NullDataSpecsMixin, Cost):
             rval.name = '0_weight_decay'
             return rval
         else:
-            total_cost = reduce(operator.add, layer_costs)
+            total_cost = reduce(lambda x, y: x + y, layer_costs)
         total_cost.name = 'MLP_WeightDecay'
 
         assert total_cost.ndim == 0
@@ -114,9 +116,12 @@ class WeightDecay(NullDataSpecsMixin, Cost):
 
 
 class L1WeightDecay(NullDataSpecsMixin, Cost):
-    """L1 regularization cost for MLP.
+    """
+    L1 regularization cost for MLP.
 
-    coeff * sum(abs(weights)) for each set of weights.
+    coeff * sum(abs(weights)) 
+    
+    for each set of weights.
 
     Parameters
     ----------
@@ -132,8 +137,9 @@ class L1WeightDecay(NullDataSpecsMixin, Cost):
         self.__dict__.update(locals())
         del self.self
 
-    def expr(self, model, data, ** kwargs):
-        """Returns a theano expression for the cost function.
+    def expr(self, model, data, **kwargs):
+        """
+        Returns a theano expression for the cost function.
 
         Parameters
         ----------
@@ -154,7 +160,7 @@ class L1WeightDecay(NullDataSpecsMixin, Cost):
                        for layer, coeff
                        in safe_izip(model.layers, self.coeffs)]
 
-        assert T.scalar() != 0.  # make sure theano semantics do what I want
+        assert T.scalar() != 0. # make sure theano semantics do what I want
         layer_costs = [cost for cost in layer_costs if cost != 0.]
 
         if len(layer_costs) == 0:
@@ -162,7 +168,7 @@ class L1WeightDecay(NullDataSpecsMixin, Cost):
             rval.name = '0_l1_penalty'
             return rval
         else:
-            total_cost = reduce(operator.add, layer_costs)
+            total_cost = reduce(lambda x, y: x + y, layer_costs)
         total_cost.name = 'MLP_L1Penalty'
 
         assert total_cost.ndim == 0
